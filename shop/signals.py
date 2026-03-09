@@ -10,30 +10,32 @@ def create_user_profile(sender, instance, created, **kwargs):
     """
     if created:
         # Crée le profil uniquement si l'utilisateur vient d'être créé
-        Profile.objects.create(user=instance)
-
+        Profile.objects.get_or_create(user=instance)
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    """
-    Sauvegarde le profil existant lors de la sauvegarde de l'utilisateur.
-    """
-    try:
-        instance.profile.save()
-    except Profile.DoesNotExist:
-        # Si jamais il n'existe pas (cas rare), on le crée
-        Profile.objects.create(user=instance)
+    instance.profile.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     """
+#     Sauvegarde le profil existant lors de la sauvegarde de l'utilisateur.
+#     """
+#     try:
+#         instance.profile.save()
+#     except Profile.DoesNotExist:
+#         # Si jamais il n'existe pas (cas rare), on le crée
+#         Profile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def create_or_update_profile(sender, instance, created, **kwargs):
     if created:
         # Crée un profil si l'utilisateur est nouveau
-        Profile.objects.create(user=instance)
-    else:
-        # Met à jour le profil seulement s'il existe
-        try:
-            instance.profile.save()
-        except Profile.DoesNotExist:
-            # Ignore si le profil n'existe pas
-            pass
+        Profile.objects.get_or_create(user=instance)
+    # else:
+    #     # Met à jour le profil seulement s'il existe
+    #     try:
+        instance.profile.save()
+        # except Profile.DoesNotExist:
+        #     # Ignore si le profil n'existe pas
+        #     pass

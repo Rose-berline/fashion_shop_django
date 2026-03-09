@@ -38,41 +38,26 @@ def register_user(request):
 
 
 def login_user(request):
-    """
-    Gère la connexion des utilisateurs.
-    
-    - POST : Authentifie et connecte l'utilisateur.
-    - GET  : Affiche le formulaire de connexion.
-    """
 
     if request.method == "POST":
-        # Récupération des informations envoyées par le formulaire
         username = request.POST.get('username')
         password = request.POST.get('password')
-        
-        # Authentifie l'utilisateur avec Django
+
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
-            # L'utilisateur est authentifié → on le connecte
             login(request, user)
             messages.success(request, f"Bienvenue {user.username} !")
 
-            # Vérifie si l'utilisateur a déjà un profil, sinon on le crée
-            Profile.objects.get_or_create(user=user)
-
-            # Redirection selon le type d'utilisateur
             if user.is_superuser:
                 return redirect('admin_dashboard')
             else:
                 return redirect('dashboard')
+
         else:
-            # Authentification échouée
             messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
-            # Reste sur la page login pour réessayer
             return redirect('login')
 
-    # Si GET, affiche le formulaire de connexion
     return render(request, "login.html", {})
 
 
@@ -114,34 +99,23 @@ def admin_dashboard(request):
 
 # ---------------- Home ----------------
 def home(request):
-    """Page d'accueil avec produits filtrables, nouveautés et promotions."""
-    category_id = request.GET.get('category')
-    products = Product.objects.filter(category_id=category_id) if category_id else Product.objects.all()
+    products = Product.objects.all()
     new_products = Product.objects.order_by('-id')[:8]
     promotions = Promotion.objects.filter(active=True)
-    context = {
-        'products': products,
-        'categories': Category.objects.all(),
-        'new_products': new_products,
-        'promotions': promotions
-    }
-    return render(request, 'home.html', context)
 
-
-def home(request):
-    products = Product.objects.all()
     wishlist_count = 0
-
     if request.user.is_authenticated:
         wishlist_count = Wishlist.objects.filter(user=request.user).count()
 
     context = {
         'products': products,
+        'categories': Category.objects.all(),
+        'new_products': new_products,
+        'promotions': promotions,
         'wishlist_count': wishlist_count
     }
 
     return render(request, 'home.html', context)
-
 
 # ---------------- Product CRUD ----------------
 @login_required
