@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+
+<div class="col-md-5">
+
+<div class="card shadow p-4 text-center">
+
+<h3 class="text-danger">Supprimer le produit</h3>
+
+<p class="mt-3">
+
+Voulez-vous vraiment supprimer :
+
+<strong>{{ product.name }}</strong> ?
+
+</p>
+
+<form method="POST">
+
+{% csrf_token %}
+
+<button class="btn btn-danger">
+Oui Supprimer
+</button>
+
+<a href="{% url 'product_list' %}" class="btn btn-secondary">
+Annuler
+</a>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+{% endblock %}

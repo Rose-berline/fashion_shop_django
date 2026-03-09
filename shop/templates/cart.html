@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container mt-4">
+
+<h2 class="mb-4">Votre Panier</h2>
+
+<div class="row">
+
+{% for item in items %}
+
+<div class="col-md-3 mb-4">
+
+<div class="card product-card h-100 shadow-sm">
+
+{% if item.product.image %}
+<img src="{{ item.product.image.url }}" class="card-img-top">
+{% endif %}
+
+<div class="card-body">
+
+<h5>{{ item.product.name }}</h5>
+
+<p class="text-muted">{{ item.product.category }}</p>
+
+<h6 class="text-success fw-bold">{{ item.product.price }} $</h6>
+
+<a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-danger btn-sm w-100">
+Retirer du panier
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% empty %}
+
+<p>Votre panier est vide.</p>
+
+{% endfor %}
+
+</div>
+
+<div class="mt-4">
+
+<h4>Total : {{ total }} $</h4>
+
+<a href="{% url 'checkout' %}" class="btn btn-primary mt-2">
+Payer maintenant
+</a>
+
+</div>
+
+</div>
+
+{% endblock %}

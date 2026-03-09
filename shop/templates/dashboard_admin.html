@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="d-flex" style="min-height: 80vh;">
+
+    <!-- Sidebar verticale -->
+    <nav class="bg-dark text-white p-3" style="width: 220px;">
+        <h4 class="text-center mb-4">Admin Dashboard 👑</h4>
+        <ul class="nav flex-column">
+            <li class="nav-item mb-2">
+                <a href="{% url 'dashboard' %}" class="nav-link text-white">🏠 Accueil</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'create_product' %}" class="nav-link text-white">➕ Ajouter Produit</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'product_list' %}" class="nav-link text-white">📦 Voir Produits</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'category_list' %}" class="nav-link text-white">📂 Gérer Catégories</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'cart' %}" class="nav-link text-white">🛒 Panier</a>
+            </li>
+            <li class="nav-item mb-2">
+                <a href="{% url 'wishlist' %}" class="nav-link text-white">❤️ Favoris</a>
+            </li>
+            <li class="nav-item mt-3">
+                <a href="{% url 'profile' %}" class="nav-link text-white">👤 Profil</a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="flex-grow-1 p-4">
+        <h2>Bienvenue {{ user.username }} 👑</h2>
+        <p>Dashboard Admin</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+                <div class="card bg-primary text-white p-3 text-center">
+                    <h5>Total Produits</h5>
+                    <h3>{{ total_products }}</h3>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card bg-success text-white p-3 text-center">
+                    <h5>Total Catégories</h5>
+                    <h3>{{ total_categories }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <h4>Gestion</h4>
+        <div class="d-flex flex-wrap gap-2 mt-2">
+            <a href="{% url 'create_product' %}" class="btn btn-success">Ajouter Produit</a>
+            <a href="{% url 'product_list' %}" class="btn btn-primary">Voir Produits</a>
+            <a href="{% url 'category_list' %}" class="btn btn-warning">Gérer Catégories</a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

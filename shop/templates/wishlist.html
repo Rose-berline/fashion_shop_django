@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+<h2 class="text-center mb-4">❤️ Mes Favoris</h2>
+
+<div class="row">
+
+{% for item in favorites %}
+
+<div class="col-md-3">
+
+<div class="card product-card">
+
+<img src="{{ item.product.image.url }}" class="card-img-top">
+
+<div class="card-body text-center">
+
+<h5>{{ item.product.name }}</h5>
+
+<p class="text-success">${{ item.product.price }}</p>
+
+<a href="{% url 'add_to_cart' item.product.id %}" class="btn btn-primary">
+Ajouter au panier
+</a>
+
+<a href="{% url 'remove_wishlist' item.id %}" class="btn btn-danger">
+Supprimer
+</a>
+<a href="{% url 'add_wishlist' item.id %}" class="btn btn-light">
+<i class="fa-solid fa-heart text-danger"></i>
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+{% endblock %}

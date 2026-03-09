@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2 class="mb-4">Liste des Produits</h2>
+
+<a href="{% url 'create_product' %}" class="btn btn-primary">Ajouter un produit</a>
+
+<table class="table table-bordered table-hover">
+
+<thead class="table-dark">
+
+<tr>
+<th>Image</th>
+<th>Nom</th>
+<th>Catégorie</th>
+<th>Prix</th>
+<th>Actions</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for product in products %}
+
+<tr>
+
+<td>
+{% if product.image %}
+<img src="{{ product.image.url }}" width="60">
+{% else %}
+Aucune image
+{% endif %}
+</td>
+
+<td>{{ product.name }}</td>
+
+<td>{{ product.category }}</td>
+
+<td>{{ product.price }} $</td>
+
+<td>
+
+<a href="{%  url 'update_product' product.pk %}" class="btn btn-warning btn-sm">
+Modifier
+</a>
+
+<a href="{% url 'delete_product' product.pk %}" class="btn btn-danger btn-sm">
+Supprimer
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+
+<div class="container mt-4">
+
+<div class="row">
+
+{% for product in products %}
+
+<div class="col-md-3 mb-4">
+
+<div class="product-card shadow-sm p-3 text-center">
+
+<div class="product-img-container">
+
+{% if product.image %}
+<img src="{{ product.image.url }}" class="product-img">
+{% else %}
+<img src="../static/css/images/chemise.webp" class="product-img">
+{% endif %}
+
+<span class="badge bg-danger promo-badge">Promo</span>
+
+</div>
+
+<h5 class="mt-3">{{ product.name }}</h5>
+
+<p class="text-muted">{{ product.category }}</p>
+
+<h6 class="text-success">{{ product.price }} $</h6>
+
+<div class="mt-2">
+
+<a href="{% url 'add_to_cart' product.id %}" class="btn btn-cart">
+🛒 Ajouter
+</a>
+
+<a href="{% url 'delete_product' product.pk %}" class="btn btn-danger btn-sm">
+❌
+</a>
+
+</div>
+
+</div>
+
+</div>
+    <div class="col">
+      <div class="card shadow-sm">
+        <img src="../static/css/images/chemise.webp" class="gallery-img w-50 h-50 m-5 p-5" alt="">
+        <h5>Belle chemise en vente chez Complexe_wilo_store</h5>
+      </div>
+    </div>
+
+{% endfor %}
+
+</div>
+
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Retour au Dashboard</a>
+</div>
+
+
+
+{% endblock %}
+
+<!-- Styles pour animations et hover -->
+<style>
+  /* Liens hover */
+  /* .link-hover:hover {
+    color: #ff9f1c;
+    transition: color 0.3s ease;
+  }
+
+  /* Icônes sociales */
+  /* .social-icon {
+    font-size: 1.5rem;
+    color: #ffffff;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  .social-icon:hover {
+    transform: scale(1.2) rotate(10deg);
+    color: #ff9f1c;
+  } */
+
+  /* Fond animé léger (pulsation) */
+  /* footer {
+    animation: pulseFooter 8s infinite alternate;
+  }
+
+  @keyframes pulseFooter {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  } */ */
+
+
+
+
+
+
+
+
+  
+
+/* Carte produit */
+
+.product-card{
+border-radius:15px;
+transition:all 0.3s ease;
+background:white;
+position:relative;
+overflow:hidden;
+}
+
+.product-card:hover{
+transform:translateY(-8px) scale(1.03);
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* Image produit */
+
+.product-img{
+width:100%;
+height:180px;
+object-fit:cover;
+border-radius:10px;
+transition:transform 0.4s;
+}
+
+.product-card:hover .product-img{
+transform:scale(1.1);
+}
+
+/* Badge promo */
+
+.promo-badge{
+position:absolute;
+top:10px;
+left:10px;
+font-size:12px;
+}
+
+/* Bouton panier */
+
+.btn-cart{
+background:#ff9f1c;
+color:white;
+border:none;
+transition:all 0.3s;
+}
+
+.btn-cart:hover{
+background:#ff7b00;
+transform:scale(1.05);
+}
+
+
+</style>
