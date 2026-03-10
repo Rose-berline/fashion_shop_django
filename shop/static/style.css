@@ -231,3 +231,11 @@ background:linear-gradient(90deg,#000,#333);
     border-radius: 10px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
 }
+
+.product-image {
+    width: 300px;
+    height: auto;
+    object-fit: cover;
+}
+
+

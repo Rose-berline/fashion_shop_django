@@ -7,7 +7,7 @@
   <!-- Barre de recherche -->
   <form method="GET" class="mb-4">
     <div class="input-group">
-      <input type="text" name="q" class="form-control" placeholder="Rechercher un produit..." value="{{ request.GET.q }}">
+      <input type="text" name="q" class="form-control" placeholder="Rechercher un produit..." value="{{ query|default:'' }}">
       <button class="btn btn-dark" type="submit">Rechercher</button>
     </div>
   </form>
@@ -16,10 +16,13 @@
   <div id="promoCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
     <div class="carousel-inner">
       <div class="carousel-item active">
-        <img src="{% static 'css/images/logo_wilo2.png' %}" class="d-block w-100 rounded" style="height:350px; object-fit:cover;" alt="Promo">
+        <img src="{% static 'images/logo_wilo2.png' %}" class="d-block w-100 rounded" style="height:350px; object-fit:cover;" alt="Promo">
       </div>
       <div class="carousel-item">
-        <img src="{% static 'css/images/logo_wilo.png' %}" class="d-block w-100 rounded" style="height:350px; object-fit:cover;" alt="Promo">
+        <img src="{% static 'images/logo_wilo.png' %}" class="d-block w-100 rounded" style="height:350px; object-fit:cover;" alt="Promo">
+      </div>
+      <div class="carousel-item">
+        <img src="{% static 'images/logo_wilo2.png' %}" class="d-block w-100 rounded" style="height:350px; object-fit:cover;" alt="Promo">
       </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
@@ -30,58 +33,51 @@
     </button>
   </div>
 
-  <!-- Nouveautés en grille -->
+  <!-- Nouveautés -->
   <h3 class="mb-3">Nouveautés</h3>
-  <div class="row g-4 mb-5">
-{% for product in new_products %}
-<div class="col-md-4">
-  <div class="card h-100 position-relative product-card">
+  <div class="row g-4 mb-5 justify-content-center">
+    {% for product in new_products %}
+      <div class="col-md-4">
+        <div class="card h-100 position-relative product-card">
 
-    {% if product.image %}
-      <img src="{{ product.image.url }}" class="card-img-top gallery-img" alt="{{ product.name }}">
-    {% else %}
-      <img src="{% static 'css/images/chemise.webp' %}" class="card-img-top gallery-img" alt="Produit">
-    {% endif %}
+          {% if product.image %}
+            <img src="{{ product.image.url }}" class="card-img-top gallery-img" alt="{{ product.name }}">
+          {% else %}
+            <img src="{% static 'images/chemise.webp' %}" class="card-img-top gallery-img" alt="Produit">
+          {% endif %}
 
-    <div class="overlay d-flex flex-column justify-content-center align-items-center text-center">
-      <h6 class="text-white">{{ product.name }}</h6>
-      <p class="text-white fw-bold">{{ product.price }} $</p>
+          <div class="overlay d-flex flex-column justify-content-center align-items-center text-center">
+            <h6 class="text-white">{{ product.name }}</h6>
+            <p class="text-white fw-bold">{{ product.price }} $</p>
 
-      {% if user.is_superuser %}
+            {% if user.is_superuser %}
+              <a href="{% url 'update_product' product.id %}" class="btn btn-warning btn-sm mb-1">Modifier</a>
+              <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm mb-1">Supprimer</a>
+              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm mb-1">Panier</a>
+              <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mb-1">❤</a>
+            {% elif user.is_authenticated %}
+              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm mb-1">Ajouter</a>
+              <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mb-1">❤</a>
+            {% else %}
+              <a href="{% url 'login' %}" class="btn btn-dark btn-sm">Se connecter</a>
+            {% endif %}
 
-        <a href="{% url 'update_product' product.id %}" class="btn btn-warning btn-sm mb-1">Modifier</a>
-        <a href="{% url 'delete_product' product.id %}" class="btn btn-danger btn-sm mb-1">Supprimer</a>
-        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm mb-1">Panier</a>
-        <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mb-1">❤</a>
-
-      {% elif user.is_authenticated %}
-
-        <a href="{% url 'add_to_cart' product.id %}" class="btn btn-success btn-sm mb-1">Ajouter</a>
-        <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mb-1">❤</a>
-
-      {% else %}
-
-        <a href="{% url 'login' %}" class="btn btn-dark btn-sm">Se connecter</a>
-
-      {% endif %}
-
-    </div>
-
-  </div>
-</div>
-{% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 
-  <!-- Promotions en grille -->
+  <!-- Promotions -->
   <h3 class="mb-3">Promotions spéciales</h3>
-  <div class="row g-4 mb-5">
+  <div class="row g-4 mb-5 justify-content-center">
     {% for promo in promotions %}
       <div class="col-md-4">
         <div class="card h-100 position-relative promo-card">
           {% if promo.image %}
             <img src="{{ promo.image.url }}" class="card-img-top gallery-img" alt="{{ promo.title }}">
           {% else %}
-            <img src="{% static 'css/images/chemise.webp' %}" class="card-img-top gallery-img" alt="Promotion">
+            <img src="{% static 'images/chemise.webp' %}" class="card-img-top gallery-img" alt="Promotion">
           {% endif %}
           <div class="overlay d-flex flex-column justify-content-center align-items-center text-center p-2">
             <h5 class="text-white">{{ promo.title }}</h5>
@@ -92,44 +88,38 @@
     {% endfor %}
   </div>
 
-  <!-- Galerie produits principale -->
+  <!-- Galerie produits complète -->
   <h3 class="mb-3">Nos Produits</h3>
-  <div class="row g-4 mb-5">
+  <div class="row g-4 mb-5 justify-content-center">
     {% for product in products %}
       <div class="col-md-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card h-100 shadow-sm product-card">
           {% if product.image %}
             <img src="{{ product.image.url }}" class="card-img-top gallery-img" alt="{{ product.name }}">
           {% else %}
-            <img src="{% static 'css/images/chemise.webp' %}" class="card-img-top gallery-img" alt="Produit">
+            <img src="{% static 'images/chemise.webp' %}" class="card-img-top gallery-img" alt="Produit">
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ product.name }}</h5>
             <p class="card-text">Catégorie: {{ product.category }}</p>
             <p class="card-text fw-bold">{{ product.price }} $</p>
+
             {% if user.is_superuser %}
-
-            <a href="{% url 'update_product' product.id %}" class="btn btn-sm btn-warning mb-1">Modifier</a>
-            <a href="{% url 'delete_product' product.id %}" class="btn btn-sm btn-danger mb-1">Supprimer</a>
-            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-success mt-1">Ajouter au panier</a>
-            <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mt-1">❤ Favori</a>
-
+              <a href="{% url 'update_product' product.id %}" class="btn btn-sm btn-warning mb-1">Modifier</a>
+              <a href="{% url 'delete_product' product.id %}" class="btn btn-sm btn-danger mb-1">Supprimer</a>
+              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-success mt-1">Ajouter au panier</a>
+              <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mt-1">❤ Favori</a>
             {% elif user.is_authenticated %}
-
-            <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-success mt-1">Ajouter au panier</a>
-            <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mt-1">❤ Favori</a>
-
+              <a href="{% url 'add_to_cart' product.id %}" class="btn btn-sm btn-success mt-1">Ajouter au panier</a>
+              <a href="{% url 'add_wishlist' product.id %}" class="btn btn-outline-danger btn-sm mt-1">❤ Favori</a>
             {% else %}
-
-            <a href="{% url 'login' %}" class="btn btn-dark btn-sm">Se connecter pour acheter</a>
-
+              <a href="{% url 'login' %}" class="btn btn-dark btn-sm">Se connecter pour acheter</a>
             {% endif %}
           </div>
         </div>
       </div>
     {% endfor %}
-    </div>
-
+  </div>
 
   {% if not user.is_authenticated %}
     <div class="text-center mt-4">
@@ -140,42 +130,98 @@
 
 </div>
 
+<!-- Styles -->
 <style>
-.scroll-slider {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
+/* Carte produit et promotion */
+.product-card, .promo-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 15px;
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+  background: #fff;
 }
 
-.product-card, .promo-card {
-  transition: transform 0.3s;
-}
 .product-card:hover, .promo-card:hover {
   transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
 }
 
+/* Images */
+.gallery-img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 10px 10px 0 0;
+  transition: transform 0.4s ease;
+  display: block;
+  margin: 0 auto;
+}
+
+.product-card:hover .gallery-img,
+.promo-card:hover .gallery-img {
+  transform: scale(1.1);
+}
+
+/* Overlay */
 .product-card .overlay,
 .promo-card .overlay {
   position: absolute;
   top: 0;
   left: 0;
-  width: 50%;
-  height: 50%;
-  background: rgba(0,0,0,0.65);
-  color: white;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   opacity: 0;
-  transition: opacity 0.3s;
+  transition: opacity 0.3s ease;
+  border-radius: 15px;
 }
+
 .product-card:hover .overlay,
 .promo-card:hover .overlay {
   opacity: 1;
 }
 
-.gallery-img {
-  width: 50%;
-  height: 50px;
-  object-fit: contain;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #ddd;
+.overlay h6, .overlay p {
+  margin: 5px 0;
+}
+
+.overlay .btn {
+  margin: 3px 2px;
+}
+
+/* Badge promo */
+.promo-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+  background-color: #ff4757;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 5px;
+}
+
+/* Centrer les cartes dans la grille */
+.row.g-4 {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .gallery-img { height: 200px; }
+}
+
+@media (max-width: 576px) {
+  .gallery-img { height: 150px; }
 }
 </style>
 

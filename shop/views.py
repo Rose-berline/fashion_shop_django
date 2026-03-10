@@ -1,14 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.contrib import messages
 from django.db.models import Q
 from django.conf import settings
+
 import stripe
+
 from .models import Product, Category, CartItem, Wishlist, Order, OrderItem, Promotion
 from .forms import ProductForm, CategoryForm, UserRegisterForm
-from django.contrib.auth.decorators import login_required
 from shop.models import Profile
 
 # ---------------- Stripe Configuration ----------------
@@ -99,7 +101,12 @@ def admin_dashboard(request):
 
 # ---------------- Home ----------------
 def home(request):
-    products = Product.objects.all()
+    query = request.GET.get('q')  # récupère ce que l'utilisateur tape
+    if query:
+        products = Product.objects.filter(name__icontains=query)  # recherche par nom
+    else:
+        products = Product.objects.all()
+
     new_products = Product.objects.order_by('-id')[:8]
     promotions = Promotion.objects.filter(active=True)
 
@@ -109,15 +116,16 @@ def home(request):
 
     context = {
         'products': products,
-        'categories': Category.objects.all(),
         'new_products': new_products,
         'promotions': promotions,
-        'wishlist_count': wishlist_count
+        'wishlist_count': wishlist_count,
+        'query': query,  # pour pré-remplir la barre de recherche si besoin
     }
 
     return render(request, 'home.html', context)
 
 # ---------------- Product CRUD ----------------
+@staff_member_required
 @login_required
 def product_list(request):
     """Liste de tous les produits pour gestion."""
@@ -126,22 +134,19 @@ def product_list(request):
 
 
 def products(request):
-    # ici tu peux envoyer les produits depuis la base
-    context = {}
+
+    products = Product.objects.all()
+    categories = Category.objects.all()
+
+    context = {
+        'products': products,
+        'categories': categories
+    }
+
     return render(request, 'products.html', context)
 
 
-def product_create(request):
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('products')
-    else:
-        form = ProductForm()
-    return render(request, 'product_form.html', {'form': form})
-
-
+@staff_member_required
 @login_required
 def create_product(request):
     """Création d'un nouveau produit."""
@@ -157,6 +162,7 @@ def create_product(request):
     return render(request, 'product_form.html', {'form': form})
 
 
+@staff_member_required
 @login_required
 def update_product(request, pk):
     product = get_object_or_404(Product, id=pk)
@@ -168,6 +174,7 @@ def update_product(request, pk):
     return render(request, 'product_form.html', {'form': form})
 
 
+@staff_member_required
 @login_required
 def delete_product(request, id):
     """Supprime un produit existant."""
@@ -192,6 +199,7 @@ def category_list(request):
     return render(request, 'category.html', {'categories': categories, 'form': form})
 
 
+@staff_member_required
 @login_required
 def category_update(request, id):
     """Met à jour une catégorie existante."""
@@ -204,6 +212,7 @@ def category_update(request, id):
     return render(request, 'category.html', {'categories': Category.objects.all(), 'form': form})
 
 
+@staff_member_required
 @login_required
 def category_delete(request, id):
     """Supprime une catégorie existante."""
@@ -306,8 +315,8 @@ def checkout(request):
             'quantity': 1,
         }],
         mode='payment',
-        success_url='http://127.0.0.1:8000/success/',
-        cancel_url='http://127.0.0.1:8000/cancel/',
+        success_url='https://Rapha1.pythonanywhere.com/success/',
+        cancel_url='https://Rapha1.pythonanywhere.com/cancel/',
     )
     return redirect(session.url)
 
